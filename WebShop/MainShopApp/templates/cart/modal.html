@@ -1,33 +1,72 @@
 <div class="modal fade" id="order" tabindex="-1" role="dialog" aria-labelledby="order" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="order">Введите свои данные</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true"></span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <form action="/cart/" method="POST">
-                {% csrf_token %}
-                <input type="text" class="form-control my-2" name="name" required placeholder="Введите ФИО">
-                <input type="email" class="form-control my-2" name="email" required placeholder="Введите email">
-                <input type="text" class="form-control my-2" name="phone" required placeholder="Введите номер телефона">
-                <input type="text" class="form-control my-2" name="adress" required placeholder="Введите адресс (город, отделение почты)">
-                <p class="text-center mt-3">Выберите способ доставки</p>
-                <select name="deliv"  class="form-control ">
-                    <option value="Новая почта">Новая почта</option>
-                    <option value="Укрпочта">Укрпочта</option>
-                    <option value="Ночной экспресс">Ночной экспресс</option>
-                </select>
-                <p class="text-center mt-3">Сумма к оплате: {{ res }} грн</p>
-           
-            </div>
-            <div class="modal-footer ">
-              <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Отмена</button>
-              <button type="submit" name="ord" class="btn btn-success mr-auto">Подтвердить заказ</button>
-            </div>
-        </form>
-          </div>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="order">Введите свои данные</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
       </div>
+      <div class="modal-body">
+        <form action="/cart/" method="POST">
+          {% csrf_token %}
+
+          <input type="text" value='{{initial.0}}' class="form-control my-2 {% if error.0 %} border border-danger {% endif %} " name="name"
+            required placeholder="Имя">
+          {% if error.0 %}
+          <small class="ml-4  form-text text-danger">{{error.0}}</small>
+          {% endif %}
+
+          <input type="text" value='{{initial.1}}' class="form-control my-2 {% if error.1 %} border border-danger {% endif %}" name="surname"
+            required placeholder="Фамилия">
+          {% if error.1 %}
+          <small class="ml-4 form-text text-danger">{{error.1}}</small>
+          {% endif %}
+
+          <input type="text" value='{{initial.2}}' class="form-control my-2 {% if error.2 %} border border-danger {% endif %}"
+            name="patronymic" required placeholder="Отчество">
+          {% if error.2 %}
+          <small class="ml-4 form-text text-danger">{{error.2}}</small>
+          {% endif %}
+
+          <input type="email" value='{{initial.3}}' class="form-control my-2 {% if error.3 %} border border-danger {% endif %}" name="email"
+            required placeholder="Введите email">
+          {% if error.3 %}
+          <small class="ml-4 form-text text-danger">{{error.3}}</small>
+          {% endif %}
+
+          <input type="text" value='{{initial.4}}' class="form-control my-2 {% if error.4 %} border border-danger {% endif %}" name="phone"
+            required placeholder="Введите номер телефона">
+          {% if error.4 %}
+          <small class="ml-4 form-text text-danger">{{error.4}}</small>
+          {% endif %}
+
+          <input type="text" value='{{initial.5}}' class="form-control my-2 {% if error.5 %} border border-danger {% endif %}" name="city"
+            required placeholder="Введите город">
+          {% if error.5 %}
+          <small class="ml-4 form-text text-danger">{{error.5}}</small>
+          {% endif %}
+
+          <input type="number" value='{{initial.6}}' class="form-control my-2 {% if error.6 %} border border-danger {% endif %}"
+            name="post_adress" required placeholder="Номер почтового отделения">
+          {% if error.6 %}
+          <small class="ml-4 form-text text-danger">{{error.6}}</small>
+          {% endif %}
+
+          <p class="text-center mt-3">Выберите способ доставки</p>
+          <select name="deliv" class="form-control ">
+            <option value="Новая почта">Новая почта</option>
+            <option value="Укрпочта">Укрпочта</option>
+            <option value="Ночной экспресс">Ночной экспресс</option>
+          </select>
+          <p class="text-center mt-3">Сумма к оплате: {{ res }} грн</p>
+
+      </div>
+      <div class="modal-footer ">
+        <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Отмена</button>
+        <button type="submit" name="ord" class="btn btn-success mr-auto">Подтвердить заказ</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

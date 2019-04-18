@@ -6,7 +6,7 @@
     {% for i in cart %}
     <div class='row w-100 bg-warning p-4 my-3  mx-auto rounded d-flex justify-content-between nowrap'>
         <div class="row">
-            <img src="{{i.imgs.all.0.img.url }}" class="cart-img img-thumbnail" alt="">
+            <a href="/clothes/{{i.id}}/" target="_blank"><img src="{{i.imgs.all.0.img.url }}" class="cart-img img-thumbnail" alt="#" ></a>
 
             <div class="my-auto ml-3 text-left">
                 <p>{{ i.name}}</p>
@@ -29,11 +29,18 @@
     {% if cart|length > 0 %}
     {% include 'cart/modal.html' %}
     <div class="d-flex w-100 my-3">
-        <button type="button" class="btn btn-success font-weight-bold mx-auto py-2 " data-toggle="modal" data-target="#order">
+        <button type="button" class="btn btn-success font-weight-bold mx-auto py-2 " id='former' data-toggle="modal" data-target="#order">
             Перейти к оформлению заказа
         </button>
         
     </div>
     {% endif %}
 </div>
+{% load static %}
+<script src="{% static 'js/cart_script.js' %}"></script>
+{% if flag %}
+<script type="text/javascript">
+$('#former').click()
+</script>
+{% endif %}
 {% endblock %}

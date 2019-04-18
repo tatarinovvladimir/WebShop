@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from .models import Item, DayItem, Order
 from django.conf import settings
 from django.core.mail import send_mail
-import  datetime as dt
+from .forms import OrderForm
+import datetime as dt
+
+
 def clothes(request):
     catalog = Item.objects.filter().order_by('price')
     if 'cart' in request.COOKIES:
@@ -18,8 +21,7 @@ def clothes(request):
         item_list = ''
 
     if request.POST:
-        print('POST')
-        print(int(request.POST.get('add'), base=10))
+
         response = HttpResponseRedirect(request.path)
         if int(cart):
             cart = int(cart, base=10)
@@ -81,7 +83,7 @@ def item_look(request, pk):
 
 
 def cart(request):
-
+    form = OrderForm()
 
     if request.POST and 'delete-button' in request.POST:
         response = HttpResponseRedirect(request.path)
@@ -94,10 +96,8 @@ def cart(request):
         ids_list.remove(del_id)
         print(ids_list)
 
-
-
         cart = Item.objects.filter(id__in=ids_list)
-        new_ids_list=''
+        new_ids_list = ''
         if len(ids_list) > 0:
             for i in ids_list:
                 new_ids_list += i+'|'
@@ -117,40 +117,75 @@ def cart(request):
         return response
 
     if request.POST and 'ord' in request.POST:
-        print('sdfsdfsdf')
+        print('POST')
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            print('form valid')
+            items = request.COOKIES['item_list'][:-1].split('|')
 
-        items = request.COOKIES['item_list'][:-1].split('|')
+            text_items = ''
+            bd_items = Item.objects.filter(id__in=items)
+            for i in bd_items:
+                text_items += 'Название: {} \n Артикул: {} \n Цена: {} \n \n'.format(
+                    i.name, i.id, i.price)
+            order = Order.objects.create(name='{} {} {}'.format(form.cleaned_data['surname'],
+                                                                form.cleaned_data['name'], form.cleaned_data['patronymic']),
+                                         email=form.cleaned_data['email'],
+                                         phone=form.cleaned_data['phone'],
+                                         adress=form.cleaned_data['post_adress'],
+                                         delivery=request.POST['deliv'],
+                                         items=text_items,
+                                         date=dt.datetime.now())
+            # To client
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [form.cleaned_data['email']]
 
-        text_items = ''
-        bd_items = Item.objects.filter(id__in=items)
-        for i in bd_items:
-            text_items += 'Название: {} \n Артикул: {} \n Цена: {} \n \n'.format(i.name, i.id, i.price)
-        order = Order.objects.create(name=request.POST['name'],
-                                     email=request.POST['email'],
-                                     phone=request.POST['phone'],
-                                     adress=request.POST['adress'],
-                                     delivery=request.POST['deliv'],
-                                     items=text_items,
-                                     date=dt.datetime.now())
-        # To client
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = [request.POST['email']]
+            subject = 'Заказ принят!'
+            text = """Приветствую, {}!
+            Ваш заказ принят в обработку.
+            Скоро с вами свяжется менеджер для дальнейшего офоромления!""".format(form.cleaned_data['name'])
 
-        subject = 'Заказ принят!'
-        text = """Приветствую, {}!
-        Ваш заказ принят в обработку.
-        Скоро с вами свяжется менеджер для дальнейшего офоромления!""".format(request.POST['name'])
+            send_mail(subject, text, email_from, recipient_list)
+            managers = User.objects.filter()
+            man_subject = 'Поступил новый заказ от {} {} {}'.format(form.cleaned_data['surname'],
+                                                                    form.cleaned_data['name'], form.cleaned_data['patronymic'])
+            man_text = "Данные о заказе: \n" + text_items
+            man_recipient = []
+            for i in managers:
+                man_recipient.append(i.email)
+            send_mail(man_subject, man_text, email_from, man_recipient)
+            return HttpResponseRedirect(request.path)
+        else:
+            
+            if 'item_list' in request.COOKIES:
+                ids_list = request.COOKIES['item_list']
 
-        send_mail(subject, text, email_from, recipient_list)
-        managers = User.objects.filter()
-        man_subject = 'Поступил новый заказ от ' + request.POST['name']
-        man_text = "Данные о заказе: \n" + text_items
-        man_recipient = []
-        for i in managers:
-            man_recipient.append(i.email)
-        send_mail(man_subject, man_text, email_from, man_recipient)
-        return HttpResponseRedirect(request.path)
+                ids_list = ids_list[:-1].split('|')
 
+                cart = Item.objects.filter(id__in=ids_list)
+                res = 0
+                for i in cart:
+                 res += i.price
+            flag = True
+            error = []
+            error.append(form['name'].errors)
+            error.append(form['surname'].errors)
+            error.append(form['patronymic'].errors)
+            error.append(form['email'].errors)
+            error.append(form['phone'].errors)
+            error.append(form['city'].errors)
+            error.append(form['post_adress'].errors)
+            initial= []
+            initial.append(form['name'].value())
+            initial.append(form['surname'].value())
+            initial.append(form['patronymic'].value())
+            initial.append(form['email'].value())
+            initial.append(form['phone'].value())
+            initial.append(form['city'].value())
+            initial.append(form['post_adress'].value())
+     
+            return render(request, 'cart/cart.html', {'cart': cart, 'res': res, 'form': form, 'error': error, 'flag': flag, 'initial' : initial})
+    
     if 'item_list' in request.COOKIES:
         ids_list = request.COOKIES['item_list']
 
@@ -160,10 +195,8 @@ def cart(request):
         res = 0
         for i in cart:
             res += i.price
-        return render(request, 'cart/cart.html', {'cart': cart, 'res': res})
+        return render(request, 'cart/cart.html', {'cart': cart, 'res': res, 'form': form})
 
     else:
         res = 0
-        return render(request, 'cart/cart.html', {'res': res})
-
-
+        return render(request, 'cart/cart.html', {'res': res, 'form': form})
