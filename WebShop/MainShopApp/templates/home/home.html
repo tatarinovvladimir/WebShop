@@ -1,0 +1,37 @@
+{% extends 'wrapper/wrapper.html' %}
+{% block content %}
+<div class=" d-flex justify-content-center align-items-center  h-100">
+
+
+    <div class="card my-5  shadow border bg-warning   ">
+        <div class="card-header text-center font-weight-bold h5">Товар дня</div>
+        <div class="card-body ">
+
+            <div class="text-center">
+
+                <div class="text-dark font-weight-bold  pb-2">{{ dayitem.for_item.name }}</div>
+                {% for i in dayitem.for_item.imgs.all %}
+                <img src="/media/{{i.img }}" class="img-fluid img-class img-thumbnail m-2 main-img" alt="#">
+                {% endfor %}
+                <div class="pt-2 font-weight-bold   text-dark ">
+                    <div class="p-1">{{ dayitem.for_item.desc }}</div>
+                    <div class="p-1">Цена: <span class="bg-success text-white p-1 rounded"> {{ dayitem.for_item.price }}
+                            грн </span></div>
+                    <div>
+                        <form action="/home/" method="POST">
+                            {% csrf_token %}
+                            <input type="number" name='add' value='{{dayitem.for_item.id}}' class='d-none'>
+                            <button type="submit" class="btn col-5 text-white font-weight-bold mt-4 btn-danger">В корзину</button>
+                           
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

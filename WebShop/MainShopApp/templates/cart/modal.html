@@ -1,0 +1,33 @@
+<div class="modal fade" id="order" tabindex="-1" role="dialog" aria-labelledby="order" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="order">Введите свои данные</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="/cart/" method="POST">
+                {% csrf_token %}
+                <input type="text" class="form-control my-2" name="name" required placeholder="Введите ФИО">
+                <input type="email" class="form-control my-2" name="email" required placeholder="Введите email">
+                <input type="text" class="form-control my-2" name="phone" required placeholder="Введите номер телефона">
+                <input type="text" class="form-control my-2" name="adress" required placeholder="Введите адресс (город, отделение почты)">
+                <p class="text-center mt-3">Выберите способ доставки</p>
+                <select name="deliv"  class="form-control ">
+                    <option value="Новая почта">Новая почта</option>
+                    <option value="Укрпочта">Укрпочта</option>
+                    <option value="Ночной экспресс">Ночной экспресс</option>
+                </select>
+                <p class="text-center mt-3">Сумма к оплате: {{ res }} грн</p>
+           
+            </div>
+            <div class="modal-footer ">
+              <button type="button" class="btn btn-danger ml-auto" data-dismiss="modal">Отмена</button>
+              <button type="submit" name="ord" class="btn btn-success mr-auto">Подтвердить заказ</button>
+            </div>
+        </form>
+          </div>
+        </div>
+      </div>

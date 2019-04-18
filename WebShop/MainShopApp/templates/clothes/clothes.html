@@ -1,0 +1,57 @@
+{% extends 'wrapper/wrapper.html' %}
+{% block content %}
+<div class="container-fluid h-100 w-100 pt-2">
+	{% load static %}
+	<div class="row">
+		{% for i in catalog %}
+
+		<div class="col-sm-12 col-md-6 col-lg-3 p-3 d-flex forefront-element justify-content-center text-white ">
+			<div class="card  shadow border bg-warning  myclassje ">
+				<div class="card-body">
+
+					<div class="text-center">
+						<div class="text-dark font-weight-bold  pb-2">{{ i.name }} </div>
+						<a class="text-dark" href="{{i.id}}" target="_blank">
+							<img src="/media/{{i.imgs.all.0.img }}" class="img-fluid img-class img-thumbnail "
+								alt="#"></a>
+						<div class="pt-2 font-weight-bold   text-dark ">
+
+
+							<div>Цена: {{ i.price }} грн </div>
+
+
+							<div
+								class="font-weight-bold {% if i.aviable == 'В наличии' %} text-success {% else %} text-danger {% endif %}">
+								{{i.aviable}}</div>
+							<small>Арт: {{i.id}}</small>
+
+							<div>
+								<form action="/clothes/" method="POST">
+
+									{% csrf_token %}
+									<input type="number" name='add' value='{{i.id}}' class='d-none'>
+
+
+									{% if i.aviable == 'В наличии' %}
+									<button type="submit"
+										class="btn w-100 text-white font-weight-bold mt-4 btn-danger">В корзину</button>
+									{% else %}
+									<button type="button"
+										class="btn w-100 text-white disabled font-weight-bold mt-4 btn-secondary">В
+										корзину</button>
+									{% endif %}
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		{% endfor %}
+	</div>
+
+</div>
+<script src='{% static "js/clothes_script.js" %}'></script>
+{% endblock %}

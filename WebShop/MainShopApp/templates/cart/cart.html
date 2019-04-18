@@ -1,0 +1,39 @@
+{% extends 'wrapper/wrapper.html' %}
+{% block content %}
+
+
+<div class="container font-weight-bold">
+    {% for i in cart %}
+    <div class='row w-100 bg-warning p-4 my-3  mx-auto rounded d-flex justify-content-between nowrap'>
+        <div class="row">
+            <img src="{{i.imgs.all.0.img.url }}" class="cart-img img-thumbnail" alt="">
+
+            <div class="my-auto ml-3 text-left">
+                <p>{{ i.name}}</p>
+                <p>{{ i.price }} грн </p>
+                <p
+                    class="font-weight-bold {% if i.aviable == 'В наличии' %} text-success {% else %} text-danger {% endif %}">
+                    {{i.aviable}}</p>
+            </div>
+        </div>
+        <div class='float-right '>
+            <form action="/cart/" method="POST">
+                {% csrf_token %}
+                <input type="number" class="d-none" value="{{i.id}}" name="del_cart">
+                <button type="submit" name="delete-button" class="btn mt-3 mx-auto btn-danger badge rounded ">Удалить</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    <div class='text-center font-weight-bold h4'>Итого: {{res}} грн {{cart.length}}</div>
+    {% if cart|length > 0 %}
+    {% include 'cart/modal.html' %}
+    <div class="d-flex w-100 my-3">
+        <button type="button" class="btn btn-success font-weight-bold mx-auto py-2 " data-toggle="modal" data-target="#order">
+            Перейти к оформлению заказа
+        </button>
+        
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
